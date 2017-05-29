@@ -25,7 +25,7 @@ import glob
 import argparse
 
 
-def getArgs():
+def get_args():
     """
     Parse arguments
     """
@@ -41,7 +41,7 @@ files.')
     return parser.parse_args()
 
 
-def findFolders(path):
+def find_folderss(path):
     """
     Given a directory, return a list of sub-folders containing
     'darktable_exported' folders.
@@ -50,7 +50,7 @@ def findFolders(path):
     return folders
 
 
-def readDT(fname):
+def read_dt(fname):
     """
     Read a specified darktable xml file and return the title and tags.
     """
@@ -68,13 +68,13 @@ def main():
     do the main things
     """
 
-    args = getArgs()
+    args = get_args()
 
     outf = open(args.outfile, 'w')
 
     outf.write('"location","title","tags"\n')
 
-    folders = findFolders(args.searchdir)
+    folders = find_folderss(args.searchdir)
 
     for folder in folders:
         files = glob.glob(folder + 'darktable_exported/*.jpg')
@@ -84,7 +84,7 @@ def main():
                 sys.stderr.write(fname + ' not found. Skipping.\n')
             outf.write(fname + ',"')
             iname = fname.split('darktable_exported/')[-1].split('.jpg')[0]
-            title, tags = readDT(folder + iname + '.xmp')
+            title, tags = read_dt(folder + iname + '.xmp')
             if title == 'nofile':
                 title = iname
             outf.write('"' + title + '","')
