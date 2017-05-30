@@ -41,7 +41,7 @@ files.')
     return parser.parse_args()
 
 
-def find_folderss(path):
+def find_folders(path):
     """
     Given a directory, return a list of sub-folders containing
     'darktable_exported' folders.
@@ -74,7 +74,7 @@ def main():
 
     outf.write('"location","title","tags"\n')
 
-    folders = find_folderss(args.searchdir)
+    folders = find_folders(args.searchdir)
 
     for folder in folders:
         files = glob.glob(folder + 'darktable_exported/*.jpg')
