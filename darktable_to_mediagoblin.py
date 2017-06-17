@@ -57,8 +57,10 @@ def get_metadata(fname):
     Read a specified darktable xml file and return the title and tags.
     """
 
-    title = ''
-    errreturn = ('', '')
+    metadata = {'title': '',
+                'tags': [],
+                'desc': ''}
+    errreturn = metadata
 
     if not os.path.isfile(fname):
         return errreturn
@@ -80,16 +82,14 @@ def get_metadata(fname):
 
     for sselem in selem.getchildren():
         if re.search('title', sselem.tag):
-            title = sselem.getchildren()[0].getchildren()[0].text
-        if re.search('subject', sselem.tag):
-            continue
+            metadata['title'] = sselem.getchildren()[0].getchildren()[0].text
+        elif re.search('description', sselem.tag):
+            metadata['desc'] = sselem.getchildren()[0].getchildren()[0].text
+        elif re.search('subject', sselem.tag):
+            for tag in sselem.getchildren()[0].getchildren():
+                metadata['tags'].append(tag.text)
 
-    tags = []
-
-    for tag in sselem.getchildren()[0].getchildren():
-        tags.append(tag.text)
-
-    return title, tags
+    return metadata
 
 
 def main():
@@ -113,11 +113,11 @@ def main():
                 sys.stderr.write(fname + ' not found. Skipping.\n')
             outf.write(fname + ',"')
             iname = fname.split('darktable_exported/')[-1].split('.jpg')[0]
-            tags = get_metadata(folder + iname + '.xmp')
-            if title == 'nofile':
-                title = iname
-            outf.write('"' + title + '","')
-            outf.write(tags + '"\n')
+            mdata = get_metadata(folder + iname + '.xmp')
+            if mdata['title'] == '':
+                mdata['title'] = iname
+            outf.write('"' + mdata['title'] + '","')
+            outf.write(','.join(mdata['tags']) + '"\n')
 
     outf.close()
 
