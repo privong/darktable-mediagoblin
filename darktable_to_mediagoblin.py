@@ -3,6 +3,8 @@
 Generate a mediagoblin batch upload package based off the metadata
 from darktable-generated XML files.
 
+Version 0.1.0
+
 Copyright 2017 George C. Privon
 
 This program is free software: you can redistribute it and/or modify
@@ -48,6 +50,13 @@ def find_folders(path):
     Given a directory, return a list of sub-folders containing
     'darktable_exported' folders.
     """
+
+    folders = []
+
+    subdirs = os.walk(path)
+    for directory in subdirs:
+        if re.search('darktable_exported', directory[0]):
+            folders.append(directory[0])
 
     return folders
 
@@ -106,14 +115,19 @@ def main():
     folders = find_folders(args.searchdir)
 
     for folder in folders:
-        files = glob.glob(folder + 'darktable_exported/*.jpg')
+        files = glob.glob(folder + '/*.jpg')
 
         for fname in files:
             if not os.path.isfile(fname):
                 sys.stderr.write(fname + ' not found. Skipping.\n')
-            outf.write(fname + ',"')
+            outf.write(fname + ',')
             iname = fname.split('darktable_exported/')[-1].split('.jpg')[0]
-            mdata = get_metadata(folder + iname + '.xmp')
+            if re.search('\d\d\d\d-\d\d-\d\d', iname):
+                mname = iname.rsplit('-', maxsplit=1)[1]
+            else:
+                mname = iname
+            mname = folder.split('darktable_exported')[0] + mname + '.CR2.xmp'
+            mdata = get_metadata(mname)
             if mdata['title'] == '':
                 mdata['title'] = iname
             outf.write('"' + mdata['title'] + '","')

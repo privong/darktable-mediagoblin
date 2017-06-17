@@ -5,7 +5,5 @@ The genesis of this script was that I got tired of entering all the tagging info
 
 ## Requirements
 
-This script will be tested with python3.
-
-This script uses the `lxml` library.
-
+* python3 (may work with python2, but that has not been tested).
+* [lxml](http://lxml.de)
