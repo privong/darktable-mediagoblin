@@ -20,9 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import re
 import sys
 import glob
 import argparse
+from lxml import etree
 
 
 def get_args():
@@ -50,17 +52,41 @@ def find_folders(path):
     return folders
 
 
-def read_dt(fname):
+def get_tags(fname):
     """
     Read a specified darktable xml file and return the title and tags.
     """
 
+    errreturn = ''
+
     if not os.path.isfile(fname):
-        title, tags = ('nofile', '')
+        return errreturn
 
-    # open XML file and parse
+    mdata = etree.parse(fname)
 
-    return (title, tags)
+    xmlroot = mdata.getroot()
+
+    if not re.search('xmpmeta', xmlroot.tag):
+        return errreturn
+
+    for elem in xmlroot.getchildren():
+        if re.search('RDF', elem.tag):
+            continue
+
+    for selem in elem.getchildren():
+        if re.search('Description', selem.tag):
+            continue
+
+    for sselem in selem.getchildren():
+        if re.search('subject', sselem.tag):
+            continue
+
+    tags = []
+
+    for tag in sselem.getchildren()[0].getchildren():
+        tags.append(tag.text)
+
+    return tags
 
 
 def main():
@@ -84,25 +110,13 @@ def main():
                 sys.stderr.write(fname + ' not found. Skipping.\n')
             outf.write(fname + ',"')
             iname = fname.split('darktable_exported/')[-1].split('.jpg')[0]
-            title, tags = read_dt(folder + iname + '.xmp')
+            tags = get_tags(folder + iname + '.xmp')
             if title == 'nofile':
                 title = iname
             outf.write('"' + title + '","')
             outf.write(tags + '"\n')
 
-    # output file
-    # directory to search
-    # get tags, title, and location? (default: yes)
-
-
-    # determine which files are in `darktable_exported` folders
-
-    # loop over files in folders
-    # find the metadata files for those, extract title, tags, and the (relative)
-    # path
-
-    # write out batch upload CSV file
-
+    outf.close()
 
 if __name__ == "__main__":
     main()
