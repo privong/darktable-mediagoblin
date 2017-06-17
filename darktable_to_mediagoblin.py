@@ -34,9 +34,9 @@ def get_args():
 
     parser = argparse.ArgumentParser(description="Generate mediagoblin batch \
 upload files from darktable metadata.")
-    parser.add_argument('--outfile', '-o', type='str', default='upload.csv',
+    parser.add_argument('--outfile', '-o', type=str, default='upload.csv',
                         help='Output csv file for batch upload.')
-    parser.add_argument('searchdir', type='str', default='./',
+    parser.add_argument('searchdir', type=str, default='./',
                         help='Directory to search for darktable_exported \
 files.')
 
