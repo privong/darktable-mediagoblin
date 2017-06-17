@@ -52,12 +52,13 @@ def find_folders(path):
     return folders
 
 
-def get_tags(fname):
+def get_metadata(fname):
     """
     Read a specified darktable xml file and return the title and tags.
     """
 
-    errreturn = ''
+    title = ''
+    errreturn = ('', '')
 
     if not os.path.isfile(fname):
         return errreturn
@@ -78,6 +79,8 @@ def get_tags(fname):
             continue
 
     for sselem in selem.getchildren():
+        if re.search('title', sselem.tag):
+            title = sselem.getchildren()[0].getchildren()[0].text
         if re.search('subject', sselem.tag):
             continue
 
@@ -86,7 +89,7 @@ def get_tags(fname):
     for tag in sselem.getchildren()[0].getchildren():
         tags.append(tag.text)
 
-    return tags
+    return title, tags
 
 
 def main():
@@ -110,7 +113,7 @@ def main():
                 sys.stderr.write(fname + ' not found. Skipping.\n')
             outf.write(fname + ',"')
             iname = fname.split('darktable_exported/')[-1].split('.jpg')[0]
-            tags = get_tags(folder + iname + '.xmp')
+            tags = get_metadata(folder + iname + '.xmp')
             if title == 'nofile':
                 title = iname
             outf.write('"' + title + '","')
