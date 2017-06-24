@@ -115,7 +115,7 @@ def main():
     folders = find_folders(args.searchdir)
 
     for folder in folders:
-        files = glob.glob(folder + '/*.jpg')
+        files = sorted(glob.glob(folder + '/*.jpg'))
 
         for fname in files:
             if not os.path.isfile(fname):
