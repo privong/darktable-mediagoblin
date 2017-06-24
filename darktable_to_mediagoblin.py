@@ -110,7 +110,7 @@ def main():
 
     outf = open(args.outfile, 'w')
 
-    outf.write('"location","title","tags"\n')
+    outf.write('location,dc:title,dc:tags\n')
 
     folders = find_folders(args.searchdir)
 
@@ -120,7 +120,7 @@ def main():
         for fname in files:
             if not os.path.isfile(fname):
                 sys.stderr.write(fname + ' not found. Skipping.\n')
-            outf.write(fname + ',')
+            outf.write('"' + fname + '",')
             iname = fname.split('darktable_exported/')[-1].split('.jpg')[0]
             if re.search('\d\d\d\d-\d\d-\d\d', iname):
                 mname = iname.rsplit('-', maxsplit=1)[1]
