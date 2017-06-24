@@ -3,7 +3,7 @@
 Generate a mediagoblin batch upload package based off the metadata
 from darktable-generated XML files.
 
-Version 0.1.0
+Version 0.1.1
 
 Copyright 2017 George C. Privon
 
